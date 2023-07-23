@@ -1,0 +1,26 @@
+{
+  "name": "fictional-garbanzo",
+  "version": "0.0.1",
+  "description": "Graphql implementation with Koa",
+  "main": "dist/index.js",
+  "repository": "https://github.com/elbuengad/fictional-garbanzo.git",
+  "author": "GC",
+  "license": "MIT",
+  "private": false,
+  "type": "module",
+  "dependencies": {
+    "@apollo/server": "^4.8.1",
+    "graphql": "^16.7.1"
+  },
+  "scripts": {
+    "build": "rimraf ./dist && tsc",
+    "start": "ts-node dist"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.4.4",
+    "rimraf": "^5.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
