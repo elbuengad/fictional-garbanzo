@@ -1,7 +1,7 @@
 {
   "name": "fictional-garbanzo",
   "version": "0.0.1",
-  "description": "Graphql implementation with Koa",
+  "description": "Graphql implementation with Apollo",
   "main": "dist/index.js",
   "repository": "https://github.com/elbuengad/fictional-garbanzo.git",
   "author": "GC",
