@@ -10,11 +10,12 @@
   "type": "module",
   "dependencies": {
     "@apollo/server": "^4.8.1",
-    "graphql": "^16.7.1"
+    "graphql": "^16.7.1",
+    "lowdb": "^6.0.1"
   },
   "scripts": {
     "build": "rimraf ./dist && tsc",
-    "start": "ts-node dist"
+    "start": "yarn build  && ts-node dist"
   },
   "devDependencies": {
     "@types/jest": "^29.5.3",
