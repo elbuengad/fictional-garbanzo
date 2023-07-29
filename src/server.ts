@@ -2,13 +2,12 @@ import { ApolloServer } from "@apollo/server";
 import { typeDefs } from "./graphql/typedefs";
 import { resolvers } from "./graphql/resolver";
 import { startStandaloneServer } from "@apollo/server/standalone";
+import { ApolloServerPluginInlineTrace } from '@apollo/server/plugin/inlineTrace';
 
 const server = new ApolloServer({
-
     typeDefs,
-  
     resolvers,
-  
+    plugins: [ApolloServerPluginInlineTrace()], // See https://www.apollographql.com/docs/apollo-server/api/plugin/inline-trace/
   });
 
   
