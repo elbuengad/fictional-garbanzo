@@ -1,11 +1,26 @@
 import { BaseDatasource } from "./base";
 
-const comments = new BaseDatasource('comments')
-const posts = new BaseDatasource('posts')
-const users = new BaseDatasource('users')
+export class UsersDatasource extends BaseDatasource {
+    constructor() {
+        super("users")
+    }
+}
+
+export class PostsDatasource extends BaseDatasource {
+    constructor() {
+        super("posts")
+    }
+}
+
+export class CommentsDatasource extends BaseDatasource {
+    constructor() {
+        super("comments")
+    }
+}
+
 
 export default {
-    comments, 
-    posts, 
-    users, 
+    UsersDatasource,
+    PostsDatasource,
+    CommentsDatasource,
 }
