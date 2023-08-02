@@ -1,4 +1,4 @@
-import lowdb from './lowdb'
+import lowdb from './lowdb.js'
 import DataLoader from 'dataloader'
 
 interface DatasourceI {
@@ -13,16 +13,19 @@ export class BaseDatasource implements DatasourceI {
 
     private db: any
     private table: string
-    private dataLoader = new DataLoader(keys => this.batchLoader(keys), {}) //Dataloader options are by default batch:true, cache:true
+
+    private dataLoader = new DataLoader(async (keys)=> {
+        const results = await this.loadAll();
+        const idToMap = results.reduce((mapping:any, record:any) => {
+            mapping[record.id]=record
+            return mapping
+        }, {});
+        return keys.map((key: any) => idToMap[key] || new Error(`No result for ${key}`));
+    }, {})
     
     constructor(table: string) {
         this.table = table
         this.db = lowdb(this.table)
-    }
-    
-    private async batchLoader(keys: any) {
-        const results = await this.loadAll();
-        return keys.map((key: any) => results[key] || new Error(`No result for ${key}`));
     }
 
     private async loadAll(): Promise<any> {
@@ -33,11 +36,13 @@ export class BaseDatasource implements DatasourceI {
 
     
     public async getAll(): Promise<any> {
+        if(!this.db.data.length) {
         const fullList = await this.loadAll();
         fullList.forEach((record:any) => {
             this.dataLoader.prime(record.id, record)
         });
-        return fullList;
+        }
+        return this.db.data;
     }
 
     public async get(key: any): Promise<any> {

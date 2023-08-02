@@ -1,8 +1,8 @@
-import { apolloServer } from "./server";
+import { apolloServer } from "./server/index.js";
 
-
-const app = () => {
-    console.log('Server started at:', apolloServer.url);
+const app = async () => {
+    const server = await apolloServer();
+    console.log('Server started at:', server.url);
 };
 
 app();

@@ -1,9 +1,9 @@
 import { ApolloServer } from "@apollo/server";
-import { typeDefs } from "../graphql/typedefs";
-import { resolvers } from "../graphql/resolver";
+import { typeDefs } from "../graphql/typedefs.js";
+import { resolvers } from "../graphql/resolver.js";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { ApolloServerPluginInlineTrace } from '@apollo/server/plugin/inlineTrace';
-import { CommentsDatasource, PostsDatasource, UsersDatasource } from "../datasource";
+import { UsersDatasource, PostsDatasource, CommentsDatasource } from "../datasource/index.js";
 
 interface ServerContext {
   datasource: {
@@ -20,7 +20,7 @@ const server = new ApolloServer<ServerContext>({
 });
 
 
-export const apolloServer = await startStandaloneServer(server, {
+export const apolloServer = async () => await startStandaloneServer(server, {
   listen: { port: 4000 },
   context: async () => ({
     datasource: {
