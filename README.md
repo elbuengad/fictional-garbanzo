@@ -23,19 +23,18 @@ DB is loaded from JSON files available in `resources` folder.
 
 ## Current status
 
-- API exposes User, Post and Comment entities.
+- API exposes User, Post and Comment entities allowing CRUD. Exception is `Comments` entity which can only be created and/or fetched.
 - Makes use of dataloader to optimise the access to data.
+- Types enforced in datasources, but not in resolvers yet (could not get graphql-codegen to work due to an awkward string-width dependency issue).
 
 
 ## Next steps/not included :'(
-- Implement mutations for all entities using existing datasource methods.
-- Enforce types both on resolvers (grapql-codegen) and on datasources (TS types).
 - Add tests, primarly integration ones.
 - Create a client application to integrate to the API.
 - Implement federation because why not :)
 
 
 ## Considerations
-- Some datasource operations (get post' comments) may allow to create its own dataloader as long as it is fine tuned.
 - There is not shared cache, so each request is on its own data access, however the nature of the entities/requirements may allow it (e.g. public posts could be cached throughout the server and not only per request).
-- DB selected limits a bit the ability to showcase real-life data access scenarios, where pagination and indexes are available is most of DB, however it allows to reduce the bundle size of the project.
+- DB selected (LowDB) limits a bit the ability to showcase real-life data access scenarios where pagination and indexes are available on the DB layer, however it allows to reduce the bundle size of the project. 
+- An additional array with all available ID's is maintained (per table/datasource) to leverage dataloader capabilities as much as possible. This of course would have a limit in terms of memory but relates to the previous point: if thousands of records are available, then a real DB with pagination would not return all but a defined subset, which then makes the current datasources (and array) pertinent.

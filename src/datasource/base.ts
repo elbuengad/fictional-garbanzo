@@ -1,16 +1,17 @@
 import lowdb from './lowdb.js'
 import DataLoader from 'dataloader'
 import { v4 as uuidv4 } from 'uuid'
+import { IdentityI } from './types.js'
 
-interface DatasourceI {
-    getAll(): Promise<any>
-    get(key: any): Promise<any>
-    create(record: any): Promise<any>
-    update(record: any): Promise<any>
-    remove(key: any): Promise<void>
+interface DatasourceI<T extends IdentityI> {
+    getAll(): Promise<T[]>
+    get(key: string): Promise<T>
+    create(record: Partial<T>): Promise<T>
+    update(record: T): Promise<T>
+    remove(key: string): Promise<string>
 }
 
-export class BaseDatasource implements DatasourceI {
+export class BaseDatasource <T extends IdentityI> implements DatasourceI<T> {
 
     private db: any
     private table: string
@@ -28,11 +29,11 @@ export class BaseDatasource implements DatasourceI {
 
     constructor(table: string) {
         this.table = table
-        this.db = lowdb(this.table)
+        this.db = lowdb<T>(this.table)
         this.keys = [];
     }
 
-    private async loadAll(): Promise<any> {
+    private async loadAll(): Promise<T[]> {
         await this.db.read();
         console.log('Loaded: %d %s', this.db.data.length, this.table);
         this.loadKeysFromDbData();
@@ -41,26 +42,26 @@ export class BaseDatasource implements DatasourceI {
 
     private loadKeysFromDbData(): void {
         this.keys = []
-        this.db.data.forEach((record: any) => {
+        this.db.data.forEach((record: T) => {
             this.keys.push(record.id)
         });
     }
 
-    private async saveInStorage(record: any): Promise<void> {
+    private async saveInStorage(record: T): Promise<void> {
         this.db.data.push({ ...record })
         await this.db.write()
         this.dataLoader.clear(record.id).prime(record.id, record)
         this.keys.push(record.id)
     }
 
-    private async updateInStorage(record: any): Promise<void> {
+    private async updateInStorage(record: T): Promise<void> {
         const i = this.db.data.findIndex((k: any) => k.id === record.id)
         this.db.data.splice(i, 1, record)
         await this.db.write()
         this.dataLoader.clear(record.id).prime(record.id, {...record})
     }
 
-    private async deleteInStorage(key: any): Promise<void> {
+    private async deleteInStorage(key: string): Promise<void> {
         const i = this.db.data.findIndex((k: any) => k.id === key)
         this.db.data.splice(i, 1)
         await this.db.write()
@@ -69,25 +70,25 @@ export class BaseDatasource implements DatasourceI {
         this.keys.splice(j,1)
     }
 
-    public async getAll(): Promise<any> {
+    public async getAll(): Promise<T[]> {
         if (!this.keys.length) {
             const fullList = await this.loadAll();
-            fullList.forEach((record: any) => {
+            fullList.forEach((record: T) => {
                 this.dataLoader.prime(record.id, {...record})
             });
         }
         return this.dataLoader.loadMany(this.keys);
     }
 
-    public async get(key: any): Promise<any> {
+    public async get(key: string): Promise<T> {
         return this.dataLoader.load(key)
     }
 
-    public async create(input: any): Promise<any> {
+    public async create(input: Partial<T>): Promise<T> {
         const record = {
             id: uuidv4(),
             ...input,
-        }
+        } as T
         //If object already exists then throw
         //This try-catch section is required because DB (lowDB) does not provide any built-in integrity checks
         try {
@@ -108,7 +109,7 @@ export class BaseDatasource implements DatasourceI {
 
 
 
-    public async update(input: any): Promise<any> {
+    public async update(input: T): Promise<T> {
         
         //If object does not exists then throw
         //This try-catch section is required because DB (lowDB) does not provide any built-in integrity checks
@@ -129,7 +130,7 @@ export class BaseDatasource implements DatasourceI {
 
     }
 
-    public async remove(key: any): Promise<void> {
+    public async remove(key: string): Promise<string> {
 
         //If object does not exists then throw
         //This try-catch section is required because DB (lowDB) does not provide any built-in integrity checks

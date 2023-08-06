@@ -104,7 +104,7 @@ export const typeDefs = `#graphql
     "Remove a Post, this is not a cascade deletion, so created comments will remain"
     deletePost(id: ID!): ID!
 
-    "Add comment to existing Post"
+    "Add a comment to existing Post"
     addComment(input: CreateCommentInput!): Comment!
 
   }
